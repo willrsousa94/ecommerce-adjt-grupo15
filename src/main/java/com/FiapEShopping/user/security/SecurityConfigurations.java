@@ -31,7 +31,8 @@ public class SecurityConfigurations {
                 		
         
                 		
-                	
+                		
+                		.requestMatchers(HttpMethod.PUT, "/carrinhos/adicionarItemCarrinho").permitAll()
                 		.requestMatchers(HttpMethod.PUT, "/pagamento/**").permitAll()
                 		
                     	.requestMatchers(HttpMethod.GET, "/carrinhos/**").permitAll()

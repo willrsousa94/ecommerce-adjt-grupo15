@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.el.lang.ELArithmetic.BigDecimalDelegate;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,20 +39,16 @@ public class CarrinhoDeCompras {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Item> itens;
     
     private BigDecimal total;
 
     public CarrinhoDeCompras(User user) {
         this.user = user;
-        this.itens = new ArrayList<>();
         this.total = BigDecimal.ZERO;
     }
 
-    public void adicionarItem(Item item) {
-        itens.add(item);
-        total = total.add(item.getPreco());
+    public void adicionarItem( BigDecimal valorItem) {
+        total = total.add(valorItem);
     }
 
 

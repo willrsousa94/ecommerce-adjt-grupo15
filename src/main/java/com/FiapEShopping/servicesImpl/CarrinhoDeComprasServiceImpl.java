@@ -1,5 +1,6 @@
 package com.FiapEShopping.servicesImpl;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -8,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import com.FiapEShopping.model.CarrinhoDeCompras;
 import com.FiapEShopping.model.Item;
+import com.FiapEShopping.model.ItemCarrinho;
+import com.FiapEShopping.model.ItemCarrinhoId;
 import com.FiapEShopping.model.User;
 import com.FiapEShopping.repositories.CarrinhoDeComprasRepository;
 import com.FiapEShopping.repositories.ItensRepository;
@@ -37,29 +40,29 @@ return carrinhoDeComprasRepository.findById(id);
 	
 	
     @Override
-    public CarrinhoDeCompras adicionarItem(UUID carrinhoId, Item item) {
-        Optional<CarrinhoDeCompras> optionalCarrinho = carrinhoDeComprasRepository.findById(carrinhoId);
-        if (optionalCarrinho.isPresent()) {
+    public CarrinhoDeCompras adicionarItem(UUID idCarrinho, UUID idItem, int quantidade) {
+    	
+        Optional<CarrinhoDeCompras> optionalCarrinho = carrinhoDeComprasRepository.findById(idCarrinho);
+        Optional<Item> itemLocalizado = itensRepository.findById(idItem);
+        if (optionalCarrinho.isPresent() && itemLocalizado.isPresent()) {
             CarrinhoDeCompras carrinho = optionalCarrinho.get();
-            System.out.println(item.getId());
-            Item itemDoBanco = itensRepository.findById(item.getId()).orElse(null);
-            if (itemDoBanco != null) {
-                carrinho.adicionarItem(itemDoBanco);
+            Item itemDoBanco = itemLocalizado.get();
+            
+            if(itemDoBanco.getQuantidadeEstoque() >= quantidade) {
+            	
+                carrinho.adicionarItem( itemDoBanco.getPreco().multiply(BigDecimal.valueOf(quantidade)));
                 
 
-                int novaQuantidadeEstoque = itemDoBanco.getQuantidadeEstoque() - 1;
-                if (novaQuantidadeEstoque >= 0) {
+                int novaQuantidadeEstoque = itemDoBanco.getQuantidadeEstoque() - quantidade;
                     itemDoBanco.setQuantidadeEstoque(novaQuantidadeEstoque);
                     itensRepository.save(itemDoBanco);
-                } else {
-                    
-                    
-                    return null;
-                }
+                    return carrinhoDeComprasRepository.save(carrinho);
             }
-            return carrinhoDeComprasRepository.save(carrinho);
+            return null;
+            //quando não houver quantidade em estoque
+
         } else {
-            // Lógica de tratamento quando o carrinho não for encontrado
+            // Lógica de tratamento quando o carrinho e/ou Item não for encontrado
             return null;
         }
     }

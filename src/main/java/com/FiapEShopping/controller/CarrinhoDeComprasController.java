@@ -1,11 +1,10 @@
 package com.FiapEShopping.controller;
 
-import java.util.Optional;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.FiapEShopping.model.CarrinhoDeCompras;
-import com.FiapEShopping.model.Item;
 import com.FiapEShopping.model.User;
 import com.FiapEShopping.services.AuthorizationService;
 import com.FiapEShopping.services.CarrinhoDeComprasService;
@@ -40,10 +38,17 @@ public class CarrinhoDeComprasController {
         return ResponseEntity.ok(carrinho);
     }
 
-    @PutMapping("/{carrinhoId}/itens")
-    public ResponseEntity<Optional<CarrinhoDeCompras>> adicionarItemAoCarrinho(@PathVariable UUID carrinhoId, @RequestBody Item item) {
-        carrinhoDeComprasService.adicionarItem(carrinhoId, item);
-        Optional<CarrinhoDeCompras> carrinho = carrinhoDeComprasService.obterCarrinho(carrinhoId); // Supondo que você tenha um método para obter o carrinho pelo ID
-        return ResponseEntity.status(HttpStatus.OK).body(carrinho);
+    @PutMapping("/adicionarItemCarrinho")
+    public ResponseEntity<CarrinhoDeCompras> adicionarItemAoCarrinho(@RequestBody Map<String, String> requestBody) {
+        String idCarrinhoStr = requestBody.get("idCarrinho");
+        String idItemStr = requestBody.get("idItem");
+        String quantidadeStr = requestBody.get("quantidade");
+
+        UUID idCarrinho = UUID.fromString(idCarrinhoStr);
+        UUID idItem = UUID.fromString(idItemStr);
+        int quantidade = Integer.parseInt(quantidadeStr);
+
+        CarrinhoDeCompras carrinhoDeCompras = carrinhoDeComprasService.adicionarItem(idCarrinho, idItem, quantidade);
+        return ResponseEntity.status(HttpStatus.OK).body(carrinhoDeCompras);
     }
 }
