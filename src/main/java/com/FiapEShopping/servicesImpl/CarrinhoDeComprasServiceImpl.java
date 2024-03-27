@@ -13,6 +13,7 @@ import com.FiapEShopping.model.ItemCarrinho;
 import com.FiapEShopping.model.ItemCarrinhoId;
 import com.FiapEShopping.model.User;
 import com.FiapEShopping.repositories.CarrinhoDeComprasRepository;
+import com.FiapEShopping.repositories.ItemCarrinhoRepository;
 import com.FiapEShopping.repositories.ItensRepository;
 import com.FiapEShopping.services.CarrinhoDeComprasService;
 
@@ -20,6 +21,9 @@ import com.FiapEShopping.services.CarrinhoDeComprasService;
 public class CarrinhoDeComprasServiceImpl implements CarrinhoDeComprasService {
     private final CarrinhoDeComprasRepository carrinhoDeComprasRepository;
 
+
+    @Autowired
+    ItemCarrinhoRepository itemCarrinhoRepository;
     @Autowired
     ItensRepository itensRepository;
     
@@ -41,19 +45,24 @@ return carrinhoDeComprasRepository.findById(id);
 	
     @Override
     public CarrinhoDeCompras adicionarItem(UUID idCarrinho, UUID idItem, int quantidade) {
-    	
+    	ItemCarrinho ic = new ItemCarrinho();
+    	ic.setId(new ItemCarrinhoId(idCarrinho, idItem));
         Optional<CarrinhoDeCompras> optionalCarrinho = carrinhoDeComprasRepository.findById(idCarrinho);
         Optional<Item> itemLocalizado = itensRepository.findById(idItem);
         if (optionalCarrinho.isPresent() && itemLocalizado.isPresent()) {
+
             CarrinhoDeCompras carrinho = optionalCarrinho.get();
             Item itemDoBanco = itemLocalizado.get();
-            
+        	ic.setCarrinho(carrinho);
+        	ic.setItem(itemDoBanco);
+        	ic.setQuantidadeItemPorCarrinho(quantidade);
             if(itemDoBanco.getQuantidadeEstoque() >= quantidade) {
             	
                 carrinho.adicionarItem( itemDoBanco.getPreco().multiply(BigDecimal.valueOf(quantidade)));
                 
 
                 int novaQuantidadeEstoque = itemDoBanco.getQuantidadeEstoque() - quantidade;
+                itemCarrinhoRepository.save(ic);
                     itemDoBanco.setQuantidadeEstoque(novaQuantidadeEstoque);
                     itensRepository.save(itemDoBanco);
                     return carrinhoDeComprasRepository.save(carrinho);

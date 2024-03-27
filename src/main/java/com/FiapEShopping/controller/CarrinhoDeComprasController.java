@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,12 +19,16 @@ import com.FiapEShopping.model.User;
 import com.FiapEShopping.services.AuthorizationService;
 import com.FiapEShopping.services.CarrinhoDeComprasService;
 
+import jakarta.validation.constraints.AssertFalse.List;
+
 @RestController
 @RequestMapping("/carrinhos")
 public class CarrinhoDeComprasController {
     private final CarrinhoDeComprasService carrinhoDeComprasService;
     private final AuthorizationService authorizationService;
 
+    
+    
     @Autowired
     public CarrinhoDeComprasController(CarrinhoDeComprasService carrinhoDeComprasService, AuthorizationService authorizationService) {
         this.carrinhoDeComprasService = carrinhoDeComprasService;
@@ -51,4 +56,21 @@ public class CarrinhoDeComprasController {
         CarrinhoDeCompras carrinhoDeCompras = carrinhoDeComprasService.adicionarItem(idCarrinho, idItem, quantidade);
         return ResponseEntity.status(HttpStatus.OK).body(carrinhoDeCompras);
     }
+    
+    
+    @GetMapping("/{idCarrinho}")
+    public ResponseEntity<?> listaDeItens(@PathVariable UUID idCarrinho){
+      return null;    
+      
+      // precisamos implementar Service e implements, alem de um jPQL
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }
