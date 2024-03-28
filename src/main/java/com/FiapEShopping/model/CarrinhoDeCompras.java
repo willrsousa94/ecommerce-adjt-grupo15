@@ -7,6 +7,8 @@ import java.util.UUID;
 
 import org.apache.el.lang.ELArithmetic.BigDecimalDelegate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,6 +36,10 @@ public class CarrinhoDeCompras {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     
+    @JsonIgnore
+    @OneToMany(mappedBy = "carrinho", cascade = CascadeType.ALL)
+    private List<ItemCarrinho> itens = new ArrayList<>();
+    
     private boolean pago; 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -51,5 +57,11 @@ public class CarrinhoDeCompras {
         total = total.add(valorItem);
     }
 
+    public void removerItem(ItemCarrinho item) {
+        itens.remove(item);
+        total = total.subtract(item.getItem().getPreco().multiply(BigDecimal.valueOf(item.getQuantidadeItemPorCarrinho())));
+    }
+    
+    
 
 }

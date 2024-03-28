@@ -29,31 +29,28 @@ public class SecurityConfigurations {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                 		
-                      	.requestMatchers(HttpMethod.GET, "/h2-console/**").permitAll()
-                      	.requestMatchers(HttpMethod.POST, "/h2-console/**").permitAll()
-        
-                		
-                		
-                		.requestMatchers(HttpMethod.PUT, "/carrinhos/adicionarItemCarrinho").permitAll()
-                		.requestMatchers(HttpMethod.PUT, "/pagamento/**").permitAll()
-                		
-                    	.requestMatchers(HttpMethod.GET, "/carrinhos/**").permitAll()
-                    	.requestMatchers(HttpMethod.POST, "/carrinhos/**").permitAll()
-                    	.requestMatchers(HttpMethod.POST, "/cadastro").permitAll()
-                       	.requestMatchers(HttpMethod.PUT, "/carrinhos/**").permitAll()
+                      	
+//                      	.requestMatchers(HttpMethod.DELETE, "/carrinhos/removerItemCarrinho/**").permitAll()
+//                       	.requestMatchers(HttpMethod.PUT, "/carrinhos/**").permitAll()
+//                		 .requestMatchers(HttpMethod.POST, "/api/adicionarItem/*").permitAll() 
+//
+//
+//                		.requestMatchers(HttpMethod.PUT, "/pagamento/**").permitAll()
+//                	 	.requestMatchers(HttpMethod.GET, "/carrinhos").permitAll()
+//                    	.requestMatchers(HttpMethod.GET, "/carrinhos/**").permitAll()
+//
+//                    	.requestMatchers(HttpMethod.POST, "/carrinhos/**").permitAll()
+//                		.requestMatchers(HttpMethod.PUT, "/carrinhos/adicionarItemCarrinho").permitAll()
+//                		.requestMatchers(HttpMethod.GET, "/listarItens").permitAll()
+//                		
+
+                        
                     	
-                    	.requestMatchers(HttpMethod.GET, "/h2-console").permitAll()
-                		.requestMatchers(HttpMethod.GET, "/api/listarCarrinho").permitAll()
-                		 .requestMatchers(HttpMethod.POST, "/api/adicionarItem/*").permitAll() // Permite adicionar item ao carrinho sem autenticação
-                		.requestMatchers(HttpMethod.GET, "/listarItens").permitAll()
-                		.requestMatchers(HttpMethod.POST, "/api/criarCarrinho").permitAll()
-                		.requestMatchers(HttpMethod.POST, "/api/listarCarrinho").permitAll()
-                		.requestMatchers(HttpMethod.GET, "/listarItensCadastrados").permitAll()
+                    	
+                        .requestMatchers(HttpMethod.GET, "/users").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/cadastrarNovoItem").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/users").permitAll()
-//                        .requestMatchers(HttpMethod.POST, "/cadastro").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/cadastro").hasRole("ADMIN")
                         
                         
                         .anyRequest().authenticated())

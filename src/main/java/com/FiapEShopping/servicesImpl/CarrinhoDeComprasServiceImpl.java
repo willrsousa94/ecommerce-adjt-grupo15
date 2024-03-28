@@ -1,17 +1,21 @@
 package com.FiapEShopping.servicesImpl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.FiapEShopping.Exception.QuantidadeInsuficienteException;
 import com.FiapEShopping.model.CarrinhoDeCompras;
 import com.FiapEShopping.model.Item;
 import com.FiapEShopping.model.ItemCarrinho;
 import com.FiapEShopping.model.ItemCarrinhoId;
 import com.FiapEShopping.model.User;
+import com.FiapEShopping.model.DTO.CarrinhoDeComprasDTO;
 import com.FiapEShopping.repositories.CarrinhoDeComprasRepository;
 import com.FiapEShopping.repositories.ItemCarrinhoRepository;
 import com.FiapEShopping.repositories.ItensRepository;
@@ -66,8 +70,10 @@ return carrinhoDeComprasRepository.findById(id);
                     itemDoBanco.setQuantidadeEstoque(novaQuantidadeEstoque);
                     itensRepository.save(itemDoBanco);
                     return carrinhoDeComprasRepository.save(carrinho);
+            }else {
+            	throw new QuantidadeInsuficienteException("Quantidade em estoque insuficiente");
             }
-            return null;
+           
             //quando não houver quantidade em estoque
 
         } else {
@@ -82,7 +88,71 @@ return carrinhoDeComprasRepository.findById(id);
 		return carrinhoDeComprasRepository.save(carrinho);
 	}
 	
+	@Override
+	public List<CarrinhoDeComprasDTO> findCarrinhoWithItens(UUID carrinhoId) {
+	    List<CarrinhoDeComprasDTO> carrinhosDTO = new ArrayList<>();
+	    Optional<CarrinhoDeCompras> optionalCarrinho = carrinhoDeComprasRepository.findById(carrinhoId);
+	    if (optionalCarrinho.isPresent()) {
+	        CarrinhoDeCompras carrinho = optionalCarrinho.get();
+	        List<ItemCarrinho> itens = itemCarrinhoRepository.findByCarrinhoId(carrinho.getId());
+	        CarrinhoDeComprasDTO carrinhoDTO = new CarrinhoDeComprasDTO(carrinho.getId(), carrinho.getUser(), itens);
+	        carrinhosDTO.add(carrinhoDTO);
+	    }
+	    return carrinhosDTO;
+	}
+
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	@Override
+	public CarrinhoDeCompras removerItem(UUID carrinhoId, UUID itemId) {
+	    Optional<CarrinhoDeCompras> optionalCarrinho = carrinhoDeComprasRepository.findById(carrinhoId);
+	    Optional<ItemCarrinho> optionalItemCarrinho = itemCarrinhoRepository.findById(new ItemCarrinhoId(carrinhoId, itemId));
+
+	    if (optionalCarrinho.isPresent() && optionalItemCarrinho.isPresent()) {
+	        CarrinhoDeCompras carrinho = optionalCarrinho.get();
+	        ItemCarrinho itemCarrinho = optionalItemCarrinho.get();
+
+	        // Remover o item do carrinho
+	        carrinho.getItens().remove(itemCarrinho);
+	        carrinho.setTotal(carrinho.getTotal().subtract(itemCarrinho.getItem().getPreco()));
+
+	        // Atualizar o estoque do item removido
+	        Item item = itemCarrinho.getItem();
+	        int novaQuantidadeEstoque = item.getQuantidadeEstoque() + itemCarrinho.getQuantidadeItemPorCarrinho();
+	        item.setQuantidadeEstoque(novaQuantidadeEstoque);
+	        itensRepository.save(item);
+
+	        // Remover o registro de ItemCarrinho
+	        itemCarrinhoRepository.delete(itemCarrinho);
+
+	        // Salvar as alterações no carrinho
+	        return carrinhoDeComprasRepository.save(carrinho);
+	    } else {
+	        // Lidar com a situação em que o carrinho ou o item não é encontrado
+	        return null;
+	    }
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
 }

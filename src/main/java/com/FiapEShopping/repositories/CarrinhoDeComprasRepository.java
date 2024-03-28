@@ -9,4 +9,14 @@ import com.FiapEShopping.model.CarrinhoDeCompras;
 
 @Repository
 public interface CarrinhoDeComprasRepository extends JpaRepository<CarrinhoDeCompras, UUID> {
+
+
+	
+
+
+
+	
 }
+
+
+

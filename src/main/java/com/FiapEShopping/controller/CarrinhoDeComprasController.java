@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +20,6 @@ import com.FiapEShopping.model.User;
 import com.FiapEShopping.services.AuthorizationService;
 import com.FiapEShopping.services.CarrinhoDeComprasService;
 
-import jakarta.validation.constraints.AssertFalse.List;
 
 @RestController
 @RequestMapping("/carrinhos")
@@ -57,16 +57,25 @@ public class CarrinhoDeComprasController {
         return ResponseEntity.status(HttpStatus.OK).body(carrinhoDeCompras);
     }
     
+    @GetMapping("/{id}")
+    public ResponseEntity<CarrinhoDeCompras> listarCarrinhos(@PathVariable UUID id) {
+        CarrinhoDeCompras carrinhos = (CarrinhoDeCompras) carrinhoDeComprasService.findCarrinhoWithItens(id);
+        System.out.println(carrinhos);
+        return ResponseEntity.status(HttpStatus.OK).body(carrinhos);
     
-    @GetMapping("/{idCarrinho}")
-    public ResponseEntity<?> listaDeItens(@PathVariable UUID idCarrinho){
-      return null;    
-      
-      // precisamos implementar Service e implements, alem de um jPQL
     }
     
+
     
-    
+    @DeleteMapping("/removerItemCarrinho/{carrinhoId}/{itemId}")
+    public ResponseEntity<CarrinhoDeCompras> removerItemDoCarrinho(@PathVariable UUID carrinhoId, @PathVariable UUID itemId) {
+        CarrinhoDeCompras carrinhoDeCompras = carrinhoDeComprasService.removerItem(carrinhoId, itemId);
+        if (carrinhoDeCompras != null) {
+            return ResponseEntity.ok(carrinhoDeCompras);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
     
     
     
